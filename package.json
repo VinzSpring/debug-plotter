@@ -3,6 +3,11 @@
   "displayName": "debug-plotter",
   "description": "Allows you to graph a variables  value over time",
   "version": "0.0.1",
+  "icon": "images/icon.webp",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/VinzSpring/debug-plotter"
+  },
   "main": "./out/extension.js",
   "engines": {
     "vscode": "^1.86.0"
