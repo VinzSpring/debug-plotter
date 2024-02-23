@@ -25,7 +25,7 @@ function updatePanel(panel: vscode.WebviewPanel, breakpointHistory: Array<Breakp
     });
 }
 
-class GrapherProvider implements vscode.TreeDataProvider<VariableEntry> {
+class DebugPlotterProvider implements vscode.TreeDataProvider<VariableEntry> {
     private _onDidChangeTreeData: vscode.EventEmitter<VariableEntry | undefined | null> = new vscode.EventEmitter<VariableEntry | undefined | null>();
     readonly onDidChangeTreeData: vscode.Event<VariableEntry | undefined | null> = this._onDidChangeTreeData.event;
 
@@ -42,8 +42,8 @@ class GrapherProvider implements vscode.TreeDataProvider<VariableEntry> {
             return;
         }
         this.panel = vscode.window.createWebviewPanel(
-            'grapher', // Identifies the type of the webview. Used internally
-            'Grapher', // Title of the panel displayed to the user
+            'debugPlotter', // Identifies the type of the webview. Used internally
+            'DebugPlotter', // Title of the panel displayed to the user
             vscode.ViewColumn.Two, // Editor column to show the new webview panel in
             {
                 // Enable scripts in the webview
@@ -102,20 +102,20 @@ class GrapherProvider implements vscode.TreeDataProvider<VariableEntry> {
     }
 }
 
-let grapherProvider: GrapherProvider | undefined;
+let debugPlotterProvider: DebugPlotterProvider | undefined;
 export function activate(context: vscode.ExtensionContext) {
     console.log('Whats good from bro!');
 
-    grapherProvider = new GrapherProvider(context);
-    vscode.window.registerTreeDataProvider('grapherView', grapherProvider);
-    context.subscriptions.push(vscode.commands.registerCommand('grapher.addVariable', () => {
+    debugPlotterProvider = new DebugPlotterProvider(context);
+    vscode.window.registerTreeDataProvider('debugPlotterView', debugPlotterProvider);
+    context.subscriptions.push(vscode.commands.registerCommand('debugPlotter.addVariable', () => {
         vscode.window.showInputBox({ prompt: 'Enter variable name' }).then(value => {
             if (value) {
-                grapherProvider?.addVariable(value);
+                debugPlotterProvider?.addVariable(value);
             }
         });
     }));
-    context.subscriptions.push(vscode.commands.registerCommand('grapher.deleteVariable', (node: VariableEntry) => grapherProvider?.deleteVariable(node.label)));
+    context.subscriptions.push(vscode.commands.registerCommand('debugPlotter.deleteVariable', (node: VariableEntry) => debugPlotterProvider?.deleteVariable(node.label)));
 
     // Register the debug adapter tracker factory
     context.subscriptions.push(vscode.debug.registerDebugAdapterTrackerFactory('*', {
@@ -123,7 +123,7 @@ export function activate(context: vscode.ExtensionContext) {
             return {
                 onDidSendMessage: async message => {
                     if (message.type === 'event' && message.event === 'stopped' && message.body.reason === 'breakpoint') {
-                        if (grapherProvider?.variables.length === 0) {
+                        if (debugPlotterProvider?.variables.length === 0) {
                             return;
                         }
 
@@ -133,14 +133,14 @@ export function activate(context: vscode.ExtensionContext) {
 
                         console.log(`Hit breakpoint in thread ${threadId} with breakpoint IDs: ${hitBreakpointIds.join(', ')}`);
                         
-                        if (!grapherProvider) {
+                        if (!debugPlotterProvider) {
                             return;
                         }
 
-                        const globalIdx = grapherProvider.globalIdx++;
+                        const globalIdx = debugPlotterProvider.globalIdx++;
 
                         // Evaluate a variable when a breakpoint is hit
-                        const results: { name: string, result: string | undefined }[] = await Promise.all(grapherProvider.variables.map(
+                        const results: { name: string, result: string | undefined }[] = await Promise.all(debugPlotterProvider.variables.map(
                             async variable => {
                                 const result = await evaluateVariable(session, threadId, variable);
                                 return {
@@ -161,7 +161,7 @@ export function activate(context: vscode.ExtensionContext) {
                                 breakpointRecord.results[name] = result;
                             }
                         });
-                        grapherProvider.addResult(breakpointRecord);
+                        debugPlotterProvider.addResult(breakpointRecord);
                     }
                 }
             };
@@ -197,7 +197,7 @@ async function evaluateVariable(session: vscode.DebugSession, threadId: number, 
 // clean up the panel when the extension is deactivated
 export function deactivate() {
     console.log('Whats good from bro!');
-    if (grapherProvider && grapherProvider) {
-        grapherProvider.dispose();
+    if (debugPlotterProvider && debugPlotterProvider) {
+        debugPlotterProvider.dispose();
     }
 }

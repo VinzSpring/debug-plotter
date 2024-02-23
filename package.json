@@ -1,6 +1,6 @@
 {
-  "name": "debug-graph",
-  "displayName": "debug-graph",
+  "name": "debug-plotter",
+  "displayName": "debug-plotter",
   "description": "Allows you to graph a variables  value over time",
   "version": "0.0.1",
   "main": "./out/extension.js",
@@ -17,21 +17,21 @@
     "views": {
       "debug": [
         {
-          "id": "grapherView",
-          "name": "Grapher",
-          "contextualTitle": "Grapher",
+          "id": "debugPlotterView",
+          "name": "DebugPlotter",
+          "contextualTitle": "DebugPlotter",
           "when": "inDebugMode"
         }
       ]
     },
     "commands": [
       {
-        "command": "grapher.addVariable",
+        "command": "debugPlotter.addVariable",
         "title": "Add Variable",
         "icon": "$(add)"
       },
       {
-        "command": "grapher.deleteVariable",
+        "command": "debugPlotter.deleteVariable",
         "title": "Delete Variable",
         "icon": "$(trash)"
       }
@@ -39,15 +39,15 @@
     "menus": {
       "view/title": [
         {
-          "command": "grapher.addVariable",
-          "when": "view == grapherView",
+          "command": "debugPlotter.addVariable",
+          "when": "view == debugPlotterView",
           "group": "navigation"
         }
       ],
       "view/item/context": [
         {
-          "command": "grapher.deleteVariable",
-          "when": "view == grapherView",
+          "command": "debugPlotter.deleteVariable",
+          "when": "view == debugPlotterView",
           "group": "inline"
         }
       ]

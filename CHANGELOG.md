@@ -1,6 +1,6 @@
 # Change Log
 
-All notable changes to the "debug-graph" extension will be documented in this file.
+All notable changes to the "debug-plotter" extension will be documented in this file.
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
